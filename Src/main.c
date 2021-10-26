@@ -22,6 +22,8 @@
 #include "main.h"
 #include "assignment.h"
 
+
+
 int main(void)
 {
   /*
@@ -74,31 +76,59 @@ int main(void)
   while (1)
   {
 
-	  if(BUTTON_GET_STATE)
+	  if(edgeDetect(BUTTON_GET_STATE, 5) == RISE)
 	  {
-		  // 0.25s delay
-		  LL_mDelay(250);
+
 		  LED_ON;
-		  // 0.25s delay
 		  LL_mDelay(250);
-		  LED_OFF;
+
 	  }
-	  else
+	  else if(edgeDetect(BUTTON_GET_STATE, 5) == FALL)
 	  {
-		  // 1s delay
-		  LL_mDelay(1000);
-		  LED_ON;
-		  // 1s delay
-		  LL_mDelay(1000);
 		  LED_OFF;
+		  LL_mDelay(250);
 	  }
+	  LL_mDelay(2);
 
   }
 
 }
 
 /* USER CODE BEGIN 4 */
+static EDGE_TYPE edgeDetect(uint8_t pin_state, uint8_t samples)
+{
+	static EDGE_TYPE edge;
+	static int previous_pin_val =0;
+	static int state_val=0;
 
+	if(pin_state == 1){
+		if (previous_pin_val == 0){
+			state_val = 0;
+		}
+
+	}
+	else if(pin_state == 0){
+		if (previous_pin_val == 1){
+			state_val = 0;
+		}
+
+	}
+
+	state_val++;
+
+	if (state_val >= samples && pin_state == 1){
+		edge=RISE;
+		state_val = samples;
+	}
+
+	else if (state_val >= samples && pin_state == 0){
+		edge=FALL;
+		state_val = samples;
+	}
+
+	else edge=NONE;
+	return edge;
+}
 /* USER CODE END 4 */
 
 /**

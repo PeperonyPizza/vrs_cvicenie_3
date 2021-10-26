@@ -47,7 +47,7 @@
 #define LED_ON					*((volatile uint32_t *)((uint32_t)(0x48000000 + 0x18U))) |= (1 << 4)   	//GPIOB pin 4
 #define LED_OFF					*((volatile uint32_t *)((uint32_t)(0x48000000 + 0x28U))) |= (1 << 4)		//GPIOB pin 4
 
-#define BUTTON_GET_STATE		!(*((volatile uint32_t *)((uint32_t)(0x48000000 + 0x10U))) & (1 << 3))
+#define BUTTON_GET_STATE		(*((volatile uint32_t *)((uint32_t)(0x48000000 + 0x10U))) & (1 << 3))
 
 typedef enum
 {
@@ -58,6 +58,8 @@ typedef enum
 
 
 static EDGE_TYPE edgeDetect(uint8_t pin_state, uint8_t samples);
+
+
 
 
 #endif /* ASSIGNMENT_H_ */
