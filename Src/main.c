@@ -72,18 +72,21 @@ int main(void)
     *((volatile uint32_t *)((uint32_t)(GPIOA_BASE_ADDR + 0x0CU))) &= ~(0x3 << 8);
 
 
+ int button;
+ EDGE_TYPE edge = NONE;
 
   while (1)
   {
-
-	  if(edgeDetect(BUTTON_GET_STATE, 5) == RISE)
+	  button = BUTTON_GET_STATE/8;
+	  edge = edgeDetect(button,5);
+	  if(edge == RISE)
 	  {
 
 		  LED_ON;
 		  LL_mDelay(250);
 
 	  }
-	  else if(edgeDetect(BUTTON_GET_STATE, 5) == FALL)
+	  else if(edge == FALL)
 	  {
 		  LED_OFF;
 		  LL_mDelay(250);
@@ -113,7 +116,7 @@ static EDGE_TYPE edgeDetect(uint8_t pin_state, uint8_t samples)
 		}
 
 	}
-
+	previous_pin_val = pin_state;
 	state_val++;
 
 	if (state_val >= samples && pin_state == 1){
