@@ -18,36 +18,42 @@
 #define	GPIOA_BASE_ADDR			(uint32_t)(0x48000000U)
 //GPIOB peripheral base address
 #define	GPIOB_BASE_ADDR			(uint32_t)(0x48000400U)
+
+#define GPIOA_BASE_REG 			*((volatile uint32_t *)(GPIOA_BASE_ADDR))
+
 //MODER register
-#define	GPIOB_MODER_REG			*(uint32_t *)(GPIOB_BASE_ADDR + 0x00U)
+#define	GPIOA_MODER_REG			*((volatile uint32_t *)(GPIOA_BASE_ADDR + 0x00U))
 //OTYPER register
-#define	GPIOB_OTYPER_REG		*(uint32_t *)(GPIOB_BASE_ADDR + 0x04U)
+#define	GPIOA_OTYPER_REG		*((volatile uint32_t *)(GPIOA_BASE_ADDR + 0x04U))
 //OSPEEDER register
-#define GPIOB_OSPEEDER_REG		*(uint32_t *)(GPIOB_BASE_ADDR + 0x08U)
+#define GPIOA_OSPEEDER_REG		*((volatile uint32_t *)(GPIOA_BASE_ADDR + 0x08U))
 //PUPDR register
-#define GPIOB_PUPDR_REG			*(uint32_t *)(GPIOB_BASE_ADDR + 0x0CU)
+#define GPIOA_PUPDR_REG			*((volatile uint32_t *)(GPIOA_BASE_ADDR + 0x0CU))
 //IDR register
-#define GPIOB_IDR_REG			*(uint32_t *)(GPIOB_BASE_ADDR + 0x10U)
+#define GPIOA_IDR_REG			*((volatile uint32_t *)(GPIOA_BASE_ADDR + 0x10U))
 //ODR register
-#define GPIOB_ODR_REG			*(uint32_t *)(GPIOB_BASE_ADDR + 0x14U)
+#define GPIOA_ODR_REG			*((volatile uint32_t *)(GPIOA_BASE_ADDR + 0x14U))
 //BSRR register
-#define GPIOB_BSRR_REG			*(uint32_t *)(GPIOB_BASE_ADDR + 0x18U)
+#define GPIOA_BSRR_REG			*((volatile uint32_t *)(GPIOA_BASE_ADDR + 0x18U))
 //BRR register
-#define GPIOB_BRR_REG			*(uint32_t *)(GPIOB_BASE_ADDR + 0x28U)
+#define GPIOA_BRR_REG			*((volatile uint32_t *)(GPIOA_BASE_ADDR + 0x28U))
 
 //RCC base address
 #define	RCC_BASE_ADDR			(uint32_t)(0x40021000U)
 //AHB offset
 #define	AHB_OFFSET				(uint32_t)(0x00000014U)
 
+#define AHB_REGISTER			*((volatile uint32_t *)(GPIOA_BASE_ADDR + AHB_OFFSET))
+
 //AHBEN register
 #define	RCC_AHBENR_REG			*((volatile uint32_t *) (uint32_t)(RCC_BASE_ADDR + 0x00000014U))
 
 /* LED and button macros */
-#define LED_ON					*((volatile uint32_t *)((uint32_t)(0x48000000 + 0x18U))) |= (1 << 4)   	//GPIOB pin 4
-#define LED_OFF					*((volatile uint32_t *)((uint32_t)(0x48000000 + 0x28U))) |= (1 << 4)		//GPIOB pin 4
+#define LED_ON					GPIOA_BSRR_REG |= (1 << 4)   	//GPIOA pin 4
+#define LED_OFF					GPIOA_BRR_REG |= (1 << 4)		//GPIOA pin 4
 
-#define BUTTON_GET_STATE		(*((volatile uint32_t *)((uint32_t)(0x48000000 + 0x10U))) & (1 << 3))
+
+#define BUTTON_GET_STATE		*((volatile uint32_t *)((uint32_t)(0x48000000 + 0x10U)))
 
 typedef enum
 {
@@ -55,11 +61,6 @@ typedef enum
      RISE = 1,
      FALL = 2
 } EDGE_TYPE;
-
-
-static EDGE_TYPE edgeDetect(uint8_t pin_state, uint8_t samples);
-
-
 
 
 #endif /* ASSIGNMENT_H_ */

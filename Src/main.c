@@ -22,8 +22,6 @@
 #include "main.h"
 #include "assignment.h"
 
-
-
 int main(void)
 {
   /*
@@ -49,89 +47,58 @@ int main(void)
 
   /* Enable clock for GPIO port A*/
 
-  *((volatile uint32_t *) (uint32_t)(RCC_BASE_ADDR  + AHB_OFFSET)) |= (uint32_t)(1 << 17);
+  RCC_AHBENR_REG |= (uint32_t)(1 << 17);
 
   /* GPIOA pin 3 and 4 setup */
   //Set mode for pin 4
-    *((volatile uint32_t *)((uint32_t)GPIOA_BASE_ADDR)) &= ~(uint32_t)(0x3 << 8);
-    *((volatile uint32_t *)((uint32_t)GPIOA_BASE_ADDR)) |= (uint32_t)(1 << 8);
+  	GPIOA_BASE_REG &= ~(uint32_t)(0x3 << 8);
+  	GPIOA_BASE_REG |= (uint32_t)(1 << 8);
   //Set mode for pin 3
-  	*((volatile uint32_t *)((uint32_t)GPIOA_BASE_ADDR)) &= ~(uint32_t)(0x3 << 6);
+  	GPIOA_BASE_REG &= ~(uint32_t)(0x3 << 6);
 
     /*GPIO OTYPER register*/
-    *((volatile uint32_t *)((uint32_t)(GPIOA_BASE_ADDR + 0x04U))) &= ~(1 << 4);
+  	GPIOA_OTYPER_REG &= ~(1 << 4);
 
     /*GPIO OSPEEDR register*/
     //Set Low speed for GPIOA pin 4
-    *((volatile uint32_t *)((uint32_t)(GPIOA_BASE_ADDR + 0x08U))) &= ~(0x3 << 8);
+  	GPIOA_OSPEEDER_REG &= ~(0x3 << 8);
 
     /*GPIO PUPDR register, reset*/
     //Set pull up for GPIOA pin 4 (input)
-    *((volatile uint32_t *)((uint32_t)(GPIOA_BASE_ADDR + 0x0CU))) |= (1 << 6);
+  	GPIOA_PUPDR_REG |= (1 << 6);
     //Set no pull for GPIOA pin 3
-    *((volatile uint32_t *)((uint32_t)(GPIOA_BASE_ADDR + 0x0CU))) &= ~(0x3 << 8);
+  	GPIOA_PUPDR_REG &= ~(0x3 << 8);
 
 
- int button;
- EDGE_TYPE edge = NONE;
 
   while (1)
   {
-	  button = BUTTON_GET_STATE/8;
-	  edge = edgeDetect(button,5);
-	  if(edge == RISE)
-	  {
 
+	  if(!(BUTTON_GET_STATE & (1 << 3)))
+	  {
+		  // 0.25s delay
+		  LL_mDelay(250);
 		  LED_ON;
+		  // 0.25s delay
 		  LL_mDelay(250);
-
-	  }
-	  else if(edge == FALL)
-	  {
 		  LED_OFF;
-		  LL_mDelay(250);
 	  }
-	  LL_mDelay(2);
+	  else
+	  {
+		  // 1s delay
+		  LL_mDelay(400);
+		  LED_ON;
+		  // 1s delay
+		  LL_mDelay(40);
+		  LED_OFF;
+	  }
 
   }
 
 }
 
 /* USER CODE BEGIN 4 */
-static EDGE_TYPE edgeDetect(uint8_t pin_state, uint8_t samples)
-{
-	static EDGE_TYPE edge;
-	static int previous_pin_val =0;
-	static int state_val=0;
 
-	if(pin_state == 1){
-		if (previous_pin_val == 0){
-			state_val = 0;
-		}
-
-	}
-	else if(pin_state == 0){
-		if (previous_pin_val == 1){
-			state_val = 0;
-		}
-
-	}
-	previous_pin_val = pin_state;
-	state_val++;
-
-	if (state_val >= samples && pin_state == 1){
-		edge=RISE;
-		state_val = samples;
-	}
-
-	else if (state_val >= samples && pin_state == 0){
-		edge=FALL;
-		state_val = samples;
-	}
-
-	else edge=NONE;
-	return edge;
-}
 /* USER CODE END 4 */
 
 /**
